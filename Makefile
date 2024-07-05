@@ -1,6 +1,6 @@
 .PHONY : build run clean
 
-files = src/main.swift
+files = src/*.swift
 
 build: $(files)
 	@mkdir -p build
