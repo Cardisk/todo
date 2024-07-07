@@ -4,7 +4,7 @@ files = src/*.swift
 
 build: $(files)
 	@mkdir -p build
-	swiftc -o build/todo src/main.swift
+	swiftc -I./src/ -o build/todo $(files) 
 
 run: build
 	@build/todo
