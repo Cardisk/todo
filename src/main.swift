@@ -21,9 +21,14 @@ args.removeFirst()
 if args.count == 0 { crash(.few_args) }
 
 switch args.first ?? "" {
-    case let arg where arg.contains("."):
-        crash(.todo)
+default:
+    var files: [File] = []   
+    for arg in args {
+        let f = File(arg)
+        files.append(f)
+    }
 
-    default:
-        crash("'\(args.first ?? "")'", .command)
+    for f in files {
+        f.isolateTodos(settings.prefix)
+    }
 }
