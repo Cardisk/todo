@@ -1,7 +1,8 @@
 // Error number 
 enum Errno: Int32 {
     case generic = 1
-    case few_args, command, todo
+    case broken
+    case fewArgs, command, todo
     case count
 }
 
@@ -24,11 +25,13 @@ func crash(_ code: Errno) -> Never {
 }
 
 private func errnoMsg(_ code: Errno) -> String {
-    assert(Errno.count.rawValue == 5, "ERROR: Errno enum messages not fully handled.")
+    assert(Errno.count.rawValue == 6, "ERROR: Errno enum messages not fully handled.")
     switch code {
         case .generic:
             return "A generic error occured."
-        case .few_args:
+        case .broken:
+            return "Internal error. The programmer is terrible."
+        case .fewArgs:
             return "Not enough arguments provided."
         case .command:
             return "Unknown command provided."
