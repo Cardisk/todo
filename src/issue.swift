@@ -1,10 +1,12 @@
 struct Issue {
+    var titleIndex: Range<String.Index>
     var title: String
     var body: String
 
-    init(_ title: String, _ body: String) {
-       self.title = title
-       self.body = body
+    init(_ titleIndex: Range<String.Index>,_ title: String, _ body: String) {
+        self.titleIndex = titleIndex
+        self.title = title
+        self.body = body
     }
 
     func toUrlQuery() -> String {
