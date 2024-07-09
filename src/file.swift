@@ -50,11 +50,6 @@ class File {
             let range = self.content.range(of: line)!
             switch line {
             case let l where l.hasPrefix("TODO:"):
-                // let index = self.content.range(of: l)!
-                // self.content.replaceSubrange(index, with: "ISSUE: ")
-                // print(self.content)
-                // try! self.data!.write(to: URL(fileURLWithPath: self.path))
-
                 self.todos.append((range, l))
                 lastInsertion = false
             case let l where l.hasPrefix("FIXME:"):
@@ -125,4 +120,11 @@ class File {
         return issues
     }
 
+    func commitIssues(_ issues: [Issue]) -> Void {
+        // TODO: loop over the issues and modify self.content.
+        // At the end of this method, the File will overwrite itself.
+        // -- self.content.replaceSubrange(index, with: "ISSUE: ")
+        // -- try! self.data!.write(to: URL(fileURLWithPath: self.path))
+        crash(.todo)
+    }
 }
