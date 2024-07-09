@@ -13,7 +13,7 @@ var args = CommandLine.arguments
 
 // Validating args 
 args.removeFirst()
-if args.count == 0 { crash(.few_args) }
+if args.count == 0 { crash(.fewArgs) }
 
 switch args.first ?? "" {
 default:
