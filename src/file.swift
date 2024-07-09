@@ -3,6 +3,7 @@ import Foundation
 class File {
     var path: String
     var content: String
+    private var comments: [String]
     var todos: [String]
     var fixmes: [String]
 
@@ -10,20 +11,38 @@ class File {
         self.path = path
         self.content = 
             (try? String(contentsOfFile: path)) ?? ""
+        self.comments = []
         self.todos = []
         self.fixmes = []
     }
 
-    func isolateTodos(_ prefix: String) -> Void {
+    private func isolateComments(_ prefix: String) -> Void {
         let lines = self.content.split(separator: "\n")
 
         for line in lines {
-            switch line.trimmingCharacters(in: .whitespacesAndNewlines) {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines) 
+            if trimmed.hasPrefix(prefix) {
+                self.comments.append(trimmed)
+            }
+        }
+    }
+
+    func isolateTodos(_ prefix: String) -> Void {
+        self.isolateComments(prefix)
+
+        // false = todo, true = fixme
+        var lastInsertion: Bool = false
+        for line in self.comments {
+            switch line {
             case let l where l.hasPrefix("\(prefix) TODO:"):
                 self.todos.append(l)
+                lastInsertion = false
             case let l where l.hasPrefix("\(prefix) FIXME:"):
                 self.fixmes.append(l)
+                lastInsertion = true 
             default:
+                lastInsertion ? 
+                    self.fixmes.append(line) : self.todos.append(line) 
                 continue
             }
         }
