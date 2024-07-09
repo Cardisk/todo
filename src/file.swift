@@ -2,7 +2,10 @@ import Foundation
 
 class File {
     var path: String
+    
     var content: String
+    var data: Data?
+
     private var comments: [String]
     var todos: [String]
     var fixmes: [String]
@@ -11,9 +14,14 @@ class File {
         self.path = path
         self.content = 
             (try? String(contentsOfFile: path)) ?? ""
+        self.data = self.content.data(using: .utf8)
         self.comments = []
         self.todos = []
         self.fixmes = []
+    }
+
+    static func exists(_ path: String) -> Bool {
+        return FileManager().fileExists(atPath: path)
     }
 
     private func isolateComments(_ prefix: String) -> Void {

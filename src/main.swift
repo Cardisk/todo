@@ -1,16 +1,11 @@
 import Foundation
 
 // Global variables
-let fileManager = FileManager()
 let jsonDecoder = JSONDecoder()
-var settings: Settings
-
-// Parsing settings from 'todo.json'
-if fileManager.fileExists(atPath: "todo.json") {
-    let data = File("todo.json").content.data(using: .utf8)!
-    settings = try! jsonDecoder.decode(Settings.self, from: data)
+var settings: Settings = if File.exists("todo.json") {
+    try! jsonDecoder.decode(Settings.self, from: File("todo.json").data!)
 } else {
-    settings = Settings()
+    Settings()
 }
 
 // Command line arguments
