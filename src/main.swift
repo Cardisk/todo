@@ -25,5 +25,7 @@ default:
 
     for f in files {
         f.isolateTodos(settings.prefix)
+        let issues = f.makeIssues()
+        f.commitIssues(issues)
     }
 }

@@ -48,6 +48,7 @@ class File {
 
             // taking the position of the comment inside the file
             let range = self.content.range(of: line)!
+            print(self.content[range])
             switch line {
             case let l where l.hasPrefix("TODO:"):
                 self.todos.append((range, l))
@@ -84,12 +85,14 @@ class File {
             i += 1
 
             var body = ""
-            while !self.todos[i].1.hasPrefix("TODO:") {
+            while i < self.todos.count && !self.todos[i].1.hasPrefix("TODO:") {
                 body += self.todos[i].1 + "\n"
+                i += 1
             }
+            // now the i index is pointing to the next TODO
+            body = body.trimmingCharacters(in: .whitespacesAndNewlines)
 
             issues.append(Issue(range, title, body))
-            i += 1
         }
 
         // processing fixmes 
@@ -109,12 +112,14 @@ class File {
             i += 1
 
             var body = ""
-            while !self.fixmes[i].1.hasPrefix("FIXME:") {
+            while i < self.fixmes.count && !self.fixmes[i].1.hasPrefix("FIXME:") {
                 body += self.fixmes[i].1 + "\n"
+                i += 1
             }
+            // now the i index is pointing to the next TODO
+            body = body.trimmingCharacters(in: .whitespacesAndNewlines)
 
             issues.append(Issue(range, title, body))
-            i += 1
         }
 
         return issues
@@ -125,6 +130,12 @@ class File {
         // At the end of this method, the File will overwrite itself.
         // -- self.content.replaceSubrange(index, with: "ISSUE: ")
         // -- try! self.data!.write(to: URL(fileURLWithPath: self.path))
+        for issue in issues {
+            let line = "ISSUE: \(issue.title)"
+            self.content.replaceSubrange(issue.titleIndex.lowerBound..<issue.titleIndex.upperBound, with: line)
+        }
+
+        print("\n" + self.content)
         crash(.todo)
     }
 }
