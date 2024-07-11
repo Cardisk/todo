@@ -121,10 +121,6 @@ class File {
     }
 
     func commitIssues(_ issues: [Issue]) -> Void {
-        // TODO: loop over the issues and modify self.content.
-        // At the end of this method, the File will overwrite itself.
-        // -- self.content.replaceSubrange(index, with: "ISSUE: ")
-        // -- try! self.data!.write(to: URL(fileURLWithPath: self.path))
         for issue in issues {
             let line = "ISSUE: \(issue.title)"
             let range = self.content.range(of: issue.rawTitle)!
@@ -134,7 +130,7 @@ class File {
         if let data = self.data {
             do {
                 try data.write(to: URL(fileURLWithPath: self.path))
-            } catch { crash(.generic) }
+            } catch { crash(.write) }
         }
     }
 }
