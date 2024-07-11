@@ -47,18 +47,21 @@ default:
 
     for f in files {
         f.isolateTodos()
-        let issues = f.makeIssues()
-        for issue in issues {
-            print(issue)
+        var issues = f.makeIssues()
+        var i = 0
+        while i < issues.count {
+            print(issues[i])
             let prompt = "[ \(GREEN)a\(RESET)dd / \(RED)D\(RESET)ISCARD ] > "
-            print(prompt)
+            print(prompt, terminator: "")
             let choice = readLine(strippingNewline: true) ?? ""
             switch choice.first {
             case "a":
-                crash("Adding changes", .todo)
+                i += 1
             default:
-                crash("Discarding changes", .todo)
+                issues.remove(at: i)
             }
+            print()
         }
+        f.commitIssues(issues)
     }
 }
