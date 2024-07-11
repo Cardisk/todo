@@ -9,8 +9,8 @@ class File {
     }
 
     private var comments: [String]
-    var todos: [(Range<String.Index>, String)]
-    var fixmes: [(Range<String.Index>, String)]
+    var todos: [String]
+    var fixmes: [String]
 
     init(_ path: String) {
         self.path = path
@@ -46,19 +46,16 @@ class File {
             line.removeFirst(prefix.count)
             line = line.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            // taking the position of the comment inside the file
-            let range = self.content.range(of: line)!
-            print(self.content[range])
             switch line {
             case let l where l.hasPrefix("TODO:"):
-                self.todos.append((range, l))
+                self.todos.append(l)
                 lastInsertion = false
             case let l where l.hasPrefix("FIXME:"):
-                self.fixmes.append((range, l))
+                self.fixmes.append(l)
                 lastInsertion = true 
             default:
                 lastInsertion ? 
-                    self.fixmes.append((range, line)) : self.todos.append((range, line)) 
+                    self.fixmes.append(line) : self.todos.append(line) 
                 continue
             }
         }
@@ -71,55 +68,53 @@ class File {
         // processing todos
         i = 0
         while i < self.todos.count {
-            if !self.todos[i].1.hasPrefix("TODO:") {
+            if !self.todos[i].hasPrefix("TODO:") {
                 crash(.broken)
             }
             
-            // getting the range of TODO:...
-            let range = self.todos[i].0
+            let rawTitle = self.todos[i]
 
             // removing the TODO: prefix
-            self.todos[i].1.removeFirst(5)
+            self.todos[i].removeFirst(5)
             
-            let title = self.todos[i].1.trimmingCharacters(in: .whitespacesAndNewlines)
+            let title = self.todos[i].trimmingCharacters(in: .whitespacesAndNewlines)
             i += 1
 
             var body = ""
-            while i < self.todos.count && !self.todos[i].1.hasPrefix("TODO:") {
-                body += self.todos[i].1 + "\n"
+            while i < self.todos.count && !self.todos[i].hasPrefix("TODO:") {
+                body += self.todos[i] + "\n"
                 i += 1
             }
             // now the i index is pointing to the next TODO
             body = body.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            issues.append(Issue(range, title, body))
+            issues.append(Issue(title, rawTitle, body))
         }
 
         // processing fixmes 
         i = 0
         while i < self.fixmes.count {
-            if !self.fixmes[i].1.hasPrefix("FIXME:") {
+            if !self.fixmes[i].hasPrefix("FIXME:") {
                 crash(.broken)
             }
             
-            // getting the range of FIXME:...
-            let range = self.fixmes[i].0
+            let rawTitle = self.fixmes[i]
             
             // removing the FIXME: prefix
-            self.fixmes[i].1.removeFirst(6)
+            self.fixmes[i].removeFirst(6)
             
-            let title = self.fixmes[i].1.trimmingCharacters(in: .whitespacesAndNewlines)
+            let title = self.fixmes[i].trimmingCharacters(in: .whitespacesAndNewlines)
             i += 1
 
             var body = ""
-            while i < self.fixmes.count && !self.fixmes[i].1.hasPrefix("FIXME:") {
-                body += self.fixmes[i].1 + "\n"
+            while i < self.fixmes.count && !self.fixmes[i].hasPrefix("FIXME:") {
+                body += self.fixmes[i] + "\n"
                 i += 1
             }
             // now the i index is pointing to the next TODO
             body = body.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            issues.append(Issue(range, title, body))
+            issues.append(Issue(title, rawTitle, body))
         }
 
         return issues
@@ -132,10 +127,8 @@ class File {
         // -- try! self.data!.write(to: URL(fileURLWithPath: self.path))
         for issue in issues {
             let line = "ISSUE: \(issue.title)"
-            self.content.replaceSubrange(issue.titleIndex.lowerBound..<issue.titleIndex.upperBound, with: line)
+            let range = self.content.range(of: issue.rawTitle)!
+            self.content.replaceSubrange(range, with: line)
         }
-
-        print("\n" + self.content)
-        crash(.todo)
     }
 }

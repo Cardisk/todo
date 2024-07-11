@@ -1,11 +1,11 @@
 struct Issue {
-    var titleIndex: Range<String.Index>
     var title: String
+    var rawTitle: String
     var body: String
 
-    init(_ titleIndex: Range<String.Index>,_ title: String, _ body: String) {
-        self.titleIndex = titleIndex
+    init(_ title: String, _ rawTitle: String, _ body: String) {
         self.title = title
+        self.rawTitle = rawTitle
         self.body = body
     }
 
