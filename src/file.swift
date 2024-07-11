@@ -2,6 +2,8 @@ import Foundation
 
 class File {
     var path: String
+    var commentPrefix: String
+    var commentPostfix: String
     
     var content: String
     var data: Data? {
@@ -12,8 +14,11 @@ class File {
     var todos: [String]
     var fixmes: [String]
 
-    init(_ path: String) {
+    init(_ path: String, _ commentPrefix: String = "",
+                            _ commentPostfix: String = "") {
         self.path = path
+        self.commentPrefix = commentPrefix
+        self.commentPostfix = commentPostfix
         self.content = 
             (try? String(contentsOfFile: path)) ?? ""
         self.comments = []
@@ -25,25 +30,26 @@ class File {
         return FileManager().fileExists(atPath: path)
     }
 
-    private func isolateComments(_ prefix: String) -> Void {
+    private func isolateComments() -> Void {
         let lines = self.content.split(separator: "\n")
 
         for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines) 
-            if trimmed.hasPrefix(prefix) {
+            if trimmed.hasPrefix(self.commentPrefix) {
                 self.comments.append(trimmed)
             }
         }
     }
 
-    func isolateTodos(_ prefix: String) -> Void {
-        self.isolateComments(prefix)
+    func isolateTodos() -> Void {
+        self.isolateComments()
 
         // false = todo, true = fixme
         var lastInsertion: Bool = false
         for c in self.comments {
             var line: String = c 
-            line.removeFirst(prefix.count)
+            line.removeFirst(self.commentPrefix.count)
+            line.removeLast(self.commentPostfix.count)
             line = line.trimmingCharacters(in: .whitespacesAndNewlines)
 
             switch line {
@@ -122,7 +128,8 @@ class File {
 
     func commitIssues(_ issues: [Issue]) -> Void {
         for issue in issues {
-            let line = "ISSUE: \(issue.title)"
+            var line = "ISSUE: \(issue.title) \(self.commentPostfix)"
+            line = line.trimmingCharacters(in: .whitespacesAndNewlines)
             let range = self.content.range(of: issue.rawTitle)!
             self.content.replaceSubrange(range, with: line)
         }

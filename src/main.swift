@@ -40,12 +40,12 @@ case let cmd where commands.keys.contains(cmd):
 default:
     var files: [File] = []   
     for arg in args {
-        let f = File(arg)
+        let f = File(arg, settings.prefix, settings.postfix)
         files.append(f)
     }
 
     for f in files {
-        f.isolateTodos(settings.prefix)
+        f.isolateTodos()
         let issues = f.makeIssues()
         f.commitIssues(issues)
     }
