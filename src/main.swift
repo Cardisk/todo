@@ -16,6 +16,14 @@ args.removeFirst()
 if args.count == 0 { crash(.fewArgs) }
 
 switch args.first ?? "" {
+case "store":
+    // doesn't modify the file, just save the issues
+    // as binaries
+    crash(.todo)
+case "commit":
+    // read the issues as binaries and apply the changes
+    // then send the issue on github
+    crash(.todo)
 default:
     var files: [File] = []   
     for arg in args {

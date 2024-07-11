@@ -130,5 +130,11 @@ class File {
             let range = self.content.range(of: issue.rawTitle)!
             self.content.replaceSubrange(range, with: line)
         }
+
+        if let data = self.data {
+            do {
+                try data.write(to: URL(fileURLWithPath: self.path))
+            } catch { crash(.generic) }
+        }
     }
 }
