@@ -8,36 +8,27 @@ var settings: Settings = if File.exists("todo.json") {
     Settings()
 }
 
-let commands: [String: ([String]) -> Void] = [
+// Command line arguments
+var args = CommandLine.arguments
+
+let commands: [String: () -> Void] = [
     "-s": store, 
     "-c": commit, 
 ]
 
 // doesn't modify the file, just save the issues
 // as binaries
-func store(_ args: [String]) -> Void {
-    crash("store command", .todo)
+func store() -> Void {
+    todo(commitToFile: false)
 }
 
 // read the issues as binaries and apply the changes
 // then send the issue on github
-func commit(_ args: [String]) -> Void {
+func commit() -> Void {
     crash("commit command", .todo)
 }
 
-// Command line arguments
-var args = CommandLine.arguments
-
-// Validating args 
-args.removeFirst()
-if args.count == 0 { crash(.fewArgs) }
-
-switch args.first ?? "" {
-case let cmd where commands.keys.contains(cmd):
-    args.removeFirst()
-    commands[cmd]!(args)
-
-default:
+func todo(commitToFile: Bool = true) {
     var files: [File] = []   
     for arg in args {
         do {
@@ -63,6 +54,21 @@ default:
             }
             print()
         }
-        f.commitIssues(issues)
+
+        if commitToFile { f.commitIssues(issues) }
+        else { crash("saving issues as binaries", .todo) }
     }
+}
+
+// Validating args 
+args.removeFirst()
+if args.count == 0 { crash(.fewArgs) }
+
+switch args.first ?? "" {
+case let cmd where commands.keys.contains(cmd):
+    args.removeFirst()
+    commands[cmd]!()
+
+default:
+    todo()
 }
