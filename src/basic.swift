@@ -1,3 +1,9 @@
+let RED = "\u{001B}[0;31m"
+let GREEN = "\u{001B}[0;32m"
+let BYEL = "\u{001B}[1;33m"
+let UCYN = "\u{001B}[4;36m"
+let RESET = "\u{001B}[0;0m"
+
 // Error number 
 enum Errno: Int32 {
     case generic = 1

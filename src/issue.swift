@@ -18,3 +18,17 @@ struct Issue {
         return query.replacingOccurrences(of: " ", with: "+", options: .literal, range: nil)
     }
 }
+
+extension Issue: CustomStringConvertible {
+    var description: String {
+        let txt = """
+        \(BYEL)-- Issue:\(RESET)
+        \(UCYN)title:\(RESET)
+        \(self.title)
+        \(UCYN)body:\(RESET)
+        \(self.body)
+
+        """
+        return txt 
+    }
+}

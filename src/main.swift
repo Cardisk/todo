@@ -9,8 +9,8 @@ var settings: Settings = if File.exists("todo.json") {
 }
 
 let commands: [String: ([String]) -> Void] = [
-    "store": store, 
-    "commit": commit, 
+    "-s": store, 
+    "-c": commit, 
 ]
 
 // doesn't modify the file, just save the issues
@@ -40,6 +40,7 @@ case let cmd where commands.keys.contains(cmd):
 default:
     var files: [File] = []   
     for arg in args {
+        // TODO: need to handle non-existing files
         let f = File(arg, settings.prefix, settings.postfix)
         files.append(f)
     }
@@ -47,6 +48,17 @@ default:
     for f in files {
         f.isolateTodos()
         let issues = f.makeIssues()
-        f.commitIssues(issues)
+        for issue in issues {
+            print(issue)
+            let prompt = "[ \(GREEN)a\(RESET)dd / \(RED)D\(RESET)ISCARD ] > "
+            print(prompt)
+            let choice = readLine(strippingNewline: true) ?? ""
+            switch choice.first {
+            case "a":
+                crash("Adding changes", .todo)
+            default:
+                crash("Discarding changes", .todo)
+            }
+        }
     }
 }
