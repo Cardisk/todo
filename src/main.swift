@@ -40,9 +40,10 @@ case let cmd where commands.keys.contains(cmd):
 default:
     var files: [File] = []   
     for arg in args {
-        // TODO: need to handle non-existing files
-        let f = File(arg, settings.prefix, settings.postfix)
-        files.append(f)
+        do {
+            let f = try File(arg, settings.prefix, settings.postfix)
+            files.append(f)
+        } catch { crash(error.localizedDescription) }
     }
 
     for f in files {

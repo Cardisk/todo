@@ -15,12 +15,13 @@ class File {
     var fixmes: [String]
 
     init(_ path: String, _ commentPrefix: String = "",
-                            _ commentPostfix: String = "") {
+                            _ commentPostfix: String = "") throws {
         self.path = path
         self.commentPrefix = commentPrefix
         self.commentPostfix = commentPostfix
-        self.content = 
-            (try? String(contentsOfFile: path)) ?? ""
+
+        self.content = try String(contentsOfFile: path, encoding: .utf8)
+
         self.comments = []
         self.todos = []
         self.fixmes = []
