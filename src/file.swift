@@ -6,8 +6,8 @@ class File {
     var commentPostfix: String
     
     var content: String
-    var data: Data? {
-        get { content.data(using: .utf8) }
+    var contentData: Data {
+        get { content.data(using: .utf8)! }
     }
 
     private var comments: [String]
@@ -135,10 +135,8 @@ class File {
             self.content.replaceSubrange(range, with: line)
         }
 
-        if let data = self.data {
-            do {
-                try data.write(to: URL(fileURLWithPath: self.path))
-            } catch { crash(.write) }
-        }
+        do {
+            try self.contentData.write(to: URL(fileURLWithPath: self.path))
+        } catch { crash(.write) }
     }
 }

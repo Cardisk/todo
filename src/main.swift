@@ -3,7 +3,7 @@ import Foundation
 // Global variables
 let jsonDecoder = JSONDecoder()
 var settings: Settings = if File.exists("todo.json") {
-    try! jsonDecoder.decode(Settings.self, from: File("todo.json").data!)
+    try! jsonDecoder.decode(Settings.self, from: File("todo.json").contentData)
 } else {
     Settings()
 }
