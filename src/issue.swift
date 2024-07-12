@@ -1,4 +1,4 @@
-struct Issue {
+struct Issue: Codable {
     var title: String
     var rawTitle: String
     var body: String
