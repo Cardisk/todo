@@ -14,20 +14,29 @@ var args = CommandLine.arguments
 
 let commands: [String: () -> Void] = [
     "-h": help,
-    "-s": store, 
+    "help": help,
+    "-s": store,
+    "store": store,
     "-c": commit, 
+    "commit": commit, 
 ]
 
 func help() -> Void {
     print("""
     USAGE: 
         
-        todo [ -s | -c ] <file> ...
+        todo [ -s | store ] [ -c | commit ] [ -h | help ] <file> ...
 
     OPTIONS:
 
-        -s <file> ...     store the issues on a temporary file
-        -c                commit the issues saved on the temporary file
+        [ -s | store ] <file> ...
+            store the issues on a temporary file
+        
+        [ -c | commit ]
+            commit the issues saved on the temporary file
+        
+        [ -h | help ]
+            show this help message
 
     """)
 }
