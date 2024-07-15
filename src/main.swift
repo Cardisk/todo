@@ -11,6 +11,7 @@ var settings: Settings = if File.exists("todo.json") {
 
 // Command line arguments
 var args = CommandLine.arguments
+var issueCollection: [(File, [Issue])] = []
 
 let commands: [String: () -> Void] = [
     "-h": help,
@@ -85,14 +86,38 @@ func todo(commitToFile: Bool = true) {
             print()
         }
 
-        if commitToFile { f.commitIssues(issues) }
-        else { 
+        issueCollection.append((f, issues))
+        // if commitToFile { f.commitIssues(issues) }
+        // else { 
+        //     do {
+        //         let data = try jsonEncoder.encode(issues)
+        //         try data.write(to: URL(fileURLWithPath: ".todo_issues"))
+        //     } catch {
+        //         crash(error.localizedDescription)
+        //     }
+        // }
+    }
+
+    var jsonData: Data = Data()
+    for ic in issueCollection {
+        if commitToFile {
+            // <file>.commitIssues(<issues>)
+            ic.0.commitIssues(ic.1)
+        } else {
             do {
-                let data = try jsonEncoder.encode(issues)
-                try data.write(to: URL(fileURLWithPath: ".todo_issues"))
+                let data = try jsonEncoder.encode(ic.1)
+                jsonData += data
             } catch {
                 crash(error.localizedDescription)
             }
+        }
+    }
+
+    if !jsonData.isEmpty {
+        do {
+            try jsonData.write(to: URL(fileURLWithPath: ".todo_issues"))
+        } catch {
+            crash(error.localizedDescription)
         }
     }
 }
