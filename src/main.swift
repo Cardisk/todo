@@ -53,7 +53,7 @@ func store() -> Void {
 // then send the issue on github
 func commit() -> Void {
     do {
-        let data = try File(".todo_issues").contentData
+        let data = try File(".todoIssues").contentData
         let issues: [Issue] = try jsonDecoder.decode([Issue].self, from: data)
         for issue in issues { print(issue) }
     } catch { crash(error.localizedDescription) }
@@ -87,15 +87,6 @@ func todo(commitToFile: Bool = true) {
         }
 
         issueCollection.append((f, issues))
-        // if commitToFile { f.commitIssues(issues) }
-        // else { 
-        //     do {
-        //         let data = try jsonEncoder.encode(issues)
-        //         try data.write(to: URL(fileURLWithPath: ".todo_issues"))
-        //     } catch {
-        //         crash(error.localizedDescription)
-        //     }
-        // }
     }
 
     var jsonData: Data = Data()
@@ -115,7 +106,7 @@ func todo(commitToFile: Bool = true) {
 
     if !jsonData.isEmpty {
         do {
-            try jsonData.write(to: URL(fileURLWithPath: ".todo_issues"))
+            try jsonData.write(to: URL(fileURLWithPath: ".todoIssues"))
         } catch {
             crash(error.localizedDescription)
         }
