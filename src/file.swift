@@ -101,7 +101,7 @@ class File {
             // now the i index is pointing to the next TODO
             body = body.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            issues.append(Issue(title, rawTitle, body))
+            issues.append(Issue(self.path, title, rawTitle, body))
         }
 
         // processing fixmes 
@@ -127,7 +127,7 @@ class File {
             // now the i index is pointing to the next TODO
             body = body.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            issues.append(Issue(title, rawTitle, body))
+            issues.append(Issue(self.path, title, rawTitle, body))
         }
 
         return issues
