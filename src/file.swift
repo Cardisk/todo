@@ -47,6 +47,7 @@ class File {
 
         // false = todo, true = fixme
         var lastInsertion: Bool = false
+        var issueFound: Bool = false
         for c in self.comments {
             var line: String = c 
             line.removeFirst(self.commentPrefix.count)
@@ -57,13 +58,18 @@ class File {
             case let l where l.hasPrefix("TODO:"):
                 self.todos.append(l)
                 lastInsertion = false
+                issueFound = false
             case let l where l.hasPrefix("FIXME:"):
                 self.fixmes.append(l)
                 lastInsertion = true 
+                issueFound = false
+            case let l where l.hasPrefix("ISSUE:"):
+                issueFound = true
+                continue
             default:
+                if issueFound { continue }
                 lastInsertion ? 
                     self.fixmes.append(line) : self.todos.append(line) 
-                continue
             }
         }
     } 
