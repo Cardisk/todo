@@ -10,15 +10,6 @@ struct Issue: Codable {
         self.rawTitle = rawTitle
         self.body = body
     }
-
-    func toUrlQuery() -> String {
-        var query = "?"
-        query += "title=\(self.title)"
-        query += "&"
-        query += "body=\(self.body)"
-
-        return query.replacingOccurrences(of: " ", with: "+", options: .literal, range: nil)
-    }
 }
 
 extension Issue: CustomStringConvertible {
