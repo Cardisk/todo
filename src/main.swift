@@ -3,11 +3,12 @@ import Foundation
 // Global variables
 let jsonEncoder = JSONEncoder()
 let jsonDecoder = JSONDecoder()
-var settings: Settings = if File.exists("todo.json") {
+let settings: Settings = if File.exists("todo.json") {
     try! jsonDecoder.decode(Settings.self, from: File("todo.json").contentData)
 } else {
     Settings()
 }
+let github = Github(settings)
 
 // Command line arguments
 var args = CommandLine.arguments
@@ -117,7 +118,7 @@ func todo(commitToFile: Bool = true) {
 args.removeFirst()
 if args.isEmpty { crash(.fewArgs) }
 
-switch args.first ?? "" {
+switch args.first! {
 case let cmd where commands.keys.contains(cmd):
     args.removeFirst()
     commands[cmd]!()
