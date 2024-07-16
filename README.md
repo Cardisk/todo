@@ -1,6 +1,6 @@
 # ✏️ TODO
 
-A command line utility to process todos inside files.
+A command line utility to process TODOs & FIXMEs inside files.
 
 ## Usage
 
@@ -24,9 +24,19 @@ To show usage:
 
 ## todo.json
 
-Put inside the root directory a file that will contain the basic info about the files.
+It holds the information about the project and files.
 
-`repo`: string with repository info with <OWNER>/<REPO> format (if its the same as the project, leave empty).
+Example:
+
+```json
+{
+    "repo": "\<_OWNER_\>/\<_REPO_\>"
+    "prefix": "//"
+    "postfix": ""
+}
+```
+
+`repo`: information about remote repository (if empty by default will be used git to fetch this data)
 
 `prefix`: chars of the comment prefix.
 
@@ -36,5 +46,8 @@ Put inside the root directory a file that will contain the basic info about the 
 
 ## .todoIssues
 
-This file is created when using the command
-`-s`. This contains issues info as json that will be committed using `-c` command.
+This file is created by `[ -s | store ]` command.
+It contains information about issues not committed yet.
+
+`[ -c | commit ]` command pushes the issues to the remote repository
+and applies the changes to the interested files.
