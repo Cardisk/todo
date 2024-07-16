@@ -1,12 +1,12 @@
 import Foundation
 
 struct Settings: Decodable {
-    var url: String
+    var repo: String
     var prefix: String
     var postfix: String
 
     init() {
-        self.url = ""
+        self.repo = ""
         self.prefix = "//"
         self.postfix = ""
     }
