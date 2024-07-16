@@ -14,10 +14,13 @@ class File {
     var todos: [String]
     var fixmes: [String]
 
-    init(_ path: String, _ commentPrefix: String = "",
+    init(_ path: String, _ commentPrefix: String = "//",
                             _ commentPostfix: String = "") throws {
         self.path = path
+
+        if commentPrefix.isEmpty { crash(.prefix) }
         self.commentPrefix = commentPrefix
+
         self.commentPostfix = commentPostfix
 
         self.content = try String(contentsOfFile: path, encoding: .utf8)
