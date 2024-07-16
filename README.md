@@ -30,7 +30,7 @@ Example:
 
 ```json
 {
-    "repo": "\<_OWNER_\>/\<_REPO_\>"
+    "repo": "<OWNER>/<REPO>"
     "prefix": "//"
     "postfix": ""
 }
