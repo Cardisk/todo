@@ -26,7 +26,7 @@ To show usage:
 
 Put inside the root directory a file that will contain the basic info about the files.
 
-`url`: string representation of the remote repository url (if its the same as the project, leave empty).
+`repo`: string with repository info with <OWNER>/<REPO> format (if its the same as the project, leave empty).
 
 `prefix`: chars of the comment prefix.
 
