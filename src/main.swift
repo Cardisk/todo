@@ -8,7 +8,7 @@ let settings: Settings = if File.exists("todo.json") {
 } else {
     Settings()
 }
-let github = Github(settings)
+var github = Github(settings)
 
 // Command line arguments
 var args = CommandLine.arguments
