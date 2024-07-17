@@ -12,6 +12,7 @@ enum Errno: Int32 {
     case broken
     case write, fewArgs
     case repoInfo, prefix, command 
+    case invalidURL, invalidResponse
     case gitRemote, gitURL, gitMalformedURL
     case todo, count
 }
@@ -58,6 +59,10 @@ func getEnv(_ name: String) -> String {
     return env[name] ?? ""
 }
 
+func query(_ url: URLRequest) async throws -> (Data, URLResponse) {
+    try await URLSession.shared.data(for: url)
+}
+
 // Helper function that crashes the application
 func crash(_ message: String, _ code: Errno) -> Never {
     print("fatal: \(message): \(errnoMsg(code))")
@@ -77,7 +82,7 @@ func crash(_ code: Errno) -> Never {
 }
 
 private func errnoMsg(_ code: Errno) -> String {
-    assert(Errno.count.rawValue == 12, "ERROR: Errno enum messages not fully handled.")
+    assert(Errno.count.rawValue == 14, "ERROR: Errno enum messages not fully handled.")
     switch code {
     case .generic:
         return "A generic error occured."
@@ -93,6 +98,10 @@ private func errnoMsg(_ code: Errno) -> String {
         return "Comment prefix cannot be empty."
     case .command:
         return "Unknown command provided."
+    case .invalidURL:
+        return "Invalid Github URL"
+    case .invalidResponse:
+        return "Invalid Github Response"
     case .gitRemote:
         return "Unable to fetch git remote name."
     case .gitURL:
