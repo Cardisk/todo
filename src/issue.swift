@@ -29,13 +29,13 @@ struct Issue: Codable {
 extension Issue: CustomStringConvertible {
     var description: String {
         let txt = """
-        \(BYEL)-- Issue:\(RESET)
-        \(UCYN)file:\(RESET)
-        \(self.filePath)
-        \(UCYN)title:\(RESET)
-        \(self.title)
-        \(UCYN)body:\(RESET)
-        \(self.body)
+            \(BYEL)-- Issue:\(RESET)
+            \(UCYN)file:\(RESET)
+            \(self.filePath)
+            \(UCYN)title:\(RESET)
+            \(self.title)
+            \(UCYN)body:\(RESET)
+            \(self.body)
 
         """
         return txt 
