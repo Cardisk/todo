@@ -1,9 +1,10 @@
 import Foundation
 
+// TODO: Do I really need title and body?
 struct GithubIssue: Codable {
     let number: Int
-    let title: String
-    let body: String
+    let title: String?
+    let body: String?
 }
 
 struct Github {
@@ -78,6 +79,8 @@ struct Github {
     }
 
     mutating func postIssues(_ issues: [Issue]) async -> [GithubIssue] {
+        if issues.isEmpty { return [] }
+
         var githubIssues: [GithubIssue] = []
 
         self.request.httpMethod = "POST"
