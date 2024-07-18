@@ -26,9 +26,6 @@ let commands: [String: ([String]) -> Void] = [
 
     "-c": commit,
     "commit": commit,
-
-    "-g": get,
-    "get": get,
 ]
 
 // commands functions
@@ -81,9 +78,17 @@ func commit(_ args: [String]) -> Void {
     crash(.todo)
 }
 
-func get(_ args: [String]) -> Void {
-    // TODO: implement here
-    crash(.todo)
+func get(_ args: [String]) async -> Void {
+    var handle = await Github(settings)
+    let issues = await handle.getIssues()
+
+    if issues.isEmpty {
+        print("Nothing aquired from the remote...")
+    }
+
+    for issue in issues {
+        print(issue)
+    }
 }
 
 // application functions
@@ -165,6 +170,9 @@ func main() async -> Never {
         args.removeFirst()
         // safe unwrap, already validated
         commands[cmd]!(args)
+
+    case "-g", "get":
+        await get(args)
 
     default:
         let files = files(args)
