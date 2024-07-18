@@ -7,6 +7,19 @@ struct GithubIssue: Codable {
     let body: String?
 }
 
+extension GithubIssue: CustomStringConvertible {
+    var description: String {
+        let txt = """
+        \(BYEL)Github Issue:\(RESET)
+            \(UCYN)number:\(RESET) \(self.number)
+            \(UCYN)title:\(RESET) \(self.title ?? "<missing>")
+            \(UCYN)body:\(RESET) \(self.body ?? "<missing>")
+
+        """
+        return txt 
+    }
+}
+
 struct Github {
     private var token: String
     private var owner: String
