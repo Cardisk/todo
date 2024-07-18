@@ -54,7 +54,7 @@ func store() -> Void {
 // then send the issue on github
 func commit() -> Void {
     do {
-        let data = try File(".todoIssues").contentData
+        let data = File(".todoIssues").contentData
         let issues: [Issue] = try jsonDecoder.decode([Issue].self, from: data)
         for issue in issues { print(issue) }
     } catch { crash(error.localizedDescription) }
@@ -63,19 +63,17 @@ func commit() -> Void {
 func todo(commitToFile: Bool = true) {
     var files: [File] = []   
     for arg in args {
-        do {
-            let f = try File(arg, settings.prefix, settings.postfix)
-            files.append(f)
-        } catch { crash(error.localizedDescription) }
+        let f = File(arg, settings.prefix, settings.postfix)
+        files.append(f)
     }
 
     for f in files {
-        f.isolateTodos()
-        var issues = f.makeIssues()
+        var issues = f.issues()
         var i = 0
+        print()
         while i < issues.count {
             print(issues[i])
-            let prompt = "[ \(GREEN)a\(RESET)dd / \(RED)D\(RESET)ISCARD ] > "
+            let prompt = "    [ \(GREEN)a\(RESET)dd / \(RED)D\(RESET)ISCARD ] > "
             print(prompt, terminator: "")
             let choice = readLine(strippingNewline: true) ?? ""
             switch choice.first {
@@ -87,6 +85,7 @@ func todo(commitToFile: Bool = true) {
             print()
         }
 
+        if issues.isEmpty { continue }
         issueCollection.append((f, issues))
     }
 

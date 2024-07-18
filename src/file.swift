@@ -6,16 +6,9 @@ class File {
     var commentPostfix: String
     
     var content: String
-    var contentData: Data {
-        get { content.data(using: .utf8)! }
-    }
+    var contentData: Data 
 
-    private var comments: [String]
-    var todos: [String]
-    var fixmes: [String]
-
-    init(_ path: String, _ commentPrefix: String = "//",
-                            _ commentPostfix: String = "") throws {
+    init(_ path: String, _ commentPrefix: String = "//", _ commentPostfix: String = "") {
         self.path = path
 
         if commentPrefix.isEmpty { crash(.prefix) }
@@ -23,111 +16,85 @@ class File {
 
         self.commentPostfix = commentPostfix
 
-        self.content = try String(contentsOfFile: path, encoding: .utf8)
+        do {
+            self.content = try String(contentsOfFile: path, encoding: .utf8)
+        } catch {
+            crash(error.localizedDescription)
+        }
 
-        self.comments = []
-        self.todos = []
-        self.fixmes = []
+        self.contentData = self.content.data(using: .utf8)!
     }
 
     static func exists(_ path: String) -> Bool {
         return FileManager().fileExists(atPath: path)
     }
 
-    private func isolateComments() -> Void {
-        let lines = self.content.split(separator: "\n")
+    func issues() -> [Issue] {
+        let fileLines = self.content.split(separator: "\n")
+        if fileLines.isEmpty { return [] }
 
-        for line in lines {
-            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines) 
-            if trimmed.hasPrefix(self.commentPrefix) {
-                self.comments.append(trimmed)
+        let todo  = "TODO:"
+        let fixme = "FIXME:"
+        let issue = "ISSUE"
+
+        var hotComments: [String] = []
+        var hasHotPrefix = false
+        for line in fileLines {
+            var l = String(line)
+            l = l.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if !l.hasPrefix(self.commentPrefix) { 
+                hasHotPrefix = false
+                continue 
             }
-        }
-    }
 
-    func isolateTodos() -> Void {
-        self.isolateComments()
+            l.removeFirst(self.commentPrefix.count)
+            l.removeLast(self.commentPostfix.count)
+            l = l.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // false = todo, true = fixme
-        var lastInsertion: Bool = false
-        var issueFound: Bool = false
-        for c in self.comments {
-            var line: String = c 
-            line.removeFirst(self.commentPrefix.count)
-            line.removeLast(self.commentPostfix.count)
-            line = line.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            switch line {
-            case let l where l.hasPrefix("TODO:"):
-                self.todos.append(l)
-                lastInsertion = false
-                issueFound = false
-            case let l where l.hasPrefix("FIXME:"):
-                self.fixmes.append(l)
-                lastInsertion = true 
-                issueFound = false
-            case let l where l.hasPrefix("ISSUE:"):
-                issueFound = true
-                continue
-            default:
-                if issueFound { continue }
-                lastInsertion ? 
-                    self.fixmes.append(line) : self.todos.append(line) 
+            if l.hasPrefix(issue) { 
+                hasHotPrefix = false
+                continue 
             }
+
+            if l.hasPrefix(todo) || l.hasPrefix(fixme) {
+                hasHotPrefix = true
+            }
+
+            if !hasHotPrefix { continue }
+
+            hotComments.append(l)
         }
-    } 
-    
-    func makeIssues() -> [Issue] {
+        
         var issues: [Issue] = []
-        var i: Int
 
-        // processing todos
-        i = 0
-        while i < self.todos.count {
-            if !self.todos[i].hasPrefix("TODO:") {
+        var i = 0
+        while i < hotComments.count {
+            if !hotComments[i].hasPrefix(todo) && !hotComments[i].hasPrefix(fixme) {
                 crash(.broken)
             }
             
-            let rawTitle = self.todos[i]
+            var prefix = ""
 
-            // removing the TODO: prefix
-            self.todos[i].removeFirst(5)
+            if hotComments[i].hasPrefix(todo) { prefix = todo }
+            if hotComments[i].hasPrefix(fixme) { prefix = fixme }
             
-            let title = self.todos[i].trimmingCharacters(in: .whitespacesAndNewlines)
+            let rawTitle = hotComments[i]
+
+            // removing the prefix
+            hotComments[i].removeFirst(prefix.count)
+            
+            let title = hotComments[i].trimmingCharacters(in: .whitespacesAndNewlines)
             i += 1
 
             var body = ""
-            while i < self.todos.count && !self.todos[i].hasPrefix("TODO:") {
-                body += self.todos[i] + "\n"
+            while i < hotComments.count 
+                        && !hotComments[i].hasPrefix(todo) 
+                            && !hotComments[i].hasPrefix(fixme) {
+                body += hotComments[i] + "\n"
                 i += 1
             }
-            // now the i index is pointing to the next TODO
-            body = body.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            issues.append(Issue(self.path, title, rawTitle, body))
-        }
-
-        // processing fixmes 
-        i = 0
-        while i < self.fixmes.count {
-            if !self.fixmes[i].hasPrefix("FIXME:") {
-                crash(.broken)
-            }
-            
-            let rawTitle = self.fixmes[i]
-            
-            // removing the FIXME: prefix
-            self.fixmes[i].removeFirst(6)
-            
-            let title = self.fixmes[i].trimmingCharacters(in: .whitespacesAndNewlines)
-            i += 1
-
-            var body = ""
-            while i < self.fixmes.count && !self.fixmes[i].hasPrefix("FIXME:") {
-                body += self.fixmes[i] + "\n"
-                i += 1
-            }
-            // now the i index is pointing to the next TODO
+            // now the i index is pointing to the next prefixed comment 
             body = body.trimmingCharacters(in: .whitespacesAndNewlines)
 
             issues.append(Issue(self.path, title, rawTitle, body))
