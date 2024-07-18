@@ -6,7 +6,9 @@ class File {
     var commentPostfix: String
     
     var content: String
-    var contentData: Data 
+    var contentData: Data {
+        return self.content.data(using: .utf8)!
+    } 
 
     init(_ path: String, _ commentPrefix: String = "//", _ commentPostfix: String = "") {
         self.path = path
@@ -21,12 +23,6 @@ class File {
         } catch {
             crash(error.localizedDescription)
         }
-
-        self.contentData = self.content.data(using: .utf8)!
-    }
-
-    static func exists(_ path: String) -> Bool {
-        return FileManager().fileExists(atPath: path)
     }
 
     func issues() -> [Issue] {
@@ -105,7 +101,7 @@ class File {
 
     func commitIssues(_ issues: [Issue]) -> Void {
         for issue in issues {
-            var line = "ISSUE: \(issue.title) \(self.commentPostfix)"
+            var line = "ISSUE(#\(issue.number)): \(issue.title) \(self.commentPostfix)"
             line = line.trimmingCharacters(in: .whitespacesAndNewlines)
             let range = self.content.range(of: issue.rawTitle)!
             self.content.replaceSubrange(range, with: line)
@@ -113,6 +109,8 @@ class File {
 
         do {
             try self.contentData.write(to: URL(fileURLWithPath: self.path))
-        } catch { crash(.write) }
+        } catch { 
+            crash(error.localizedDescription) 
+        }
     }
 }
