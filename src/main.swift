@@ -43,15 +43,11 @@ func help() -> Void {
     """)
 }
 
-// doesn't modify the file, just save the issues
-// as binaries
 func store() -> Void {
     if args.isEmpty { crash(.fewArgs) }
     todo(commitToFile: false)
 }
 
-// read the issues as binaries and apply the changes
-// then send the issue on github
 func commit() -> Void {
     do {
         let data = File(".todoIssues").contentData
@@ -113,15 +109,22 @@ func todo(commitToFile: Bool = true) {
     }
 }
 
-// Validating args 
-args.removeFirst()
-if args.isEmpty { crash(.fewArgs) }
 
-switch args.first! {
-case let cmd where commands.keys.contains(cmd):
+func main() -> Never {
+    // Validating args 
     args.removeFirst()
-    commands[cmd]!()
+    if args.isEmpty { crash(.fewArgs) }
 
-default:
-    todo()
+    switch args.first! {
+    case let cmd where commands.keys.contains(cmd):
+        args.removeFirst()
+        commands[cmd]!()
+
+    default:
+        todo()
+    }
+
+    exit(0)
 }
+
+main()
