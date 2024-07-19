@@ -10,7 +10,7 @@ let RESET = "\u{001B}[0;0m"
 enum Errno: Int32 {
     case generic = 1
     case broken
-    case fewArgs, repoInfo, prefix
+    case fewArgs, repoInfo, prefix, commitFile
     case invalidURL, invalidResponse, invalidIssuesCount 
     case gitRemote, gitURL, gitMalformedURL
     case todo, count
@@ -86,7 +86,7 @@ func warn(_ msg: String, note: String = "") -> Void {
 }
 
 private func errnoMsg(_ code: Errno) -> String {
-    assert(Errno.count.rawValue == 13, "ERROR: Errno enum messages not fully handled.")
+    assert(Errno.count.rawValue == 14, "ERROR: Errno enum messages not fully handled.")
     switch code {
     case .generic:
         return "A generic error occured."
@@ -98,6 +98,8 @@ private func errnoMsg(_ code: Errno) -> String {
         return "Repository specified doesn't match <owner>/<repository>."
     case .prefix:
         return "Comment prefix cannot be empty."
+    case .commitFile:
+        return "Unable to find '.issues.todo'."
     case .invalidURL:
         return "Invalid Github URL"
     case .invalidResponse:
