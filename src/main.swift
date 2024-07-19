@@ -7,10 +7,10 @@ let jsonDecoder = JSONDecoder()
 // application settings
 var settings = Settings()
 
-if FileManager().fileExists(atPath: "todo.json") {
+if FileManager().fileExists(atPath: "settings.todo") {
      do {
          settings = try jsonDecoder.decode(Settings.self, 
-                                 from: File("todo.json").contentData)
+                                 from: File("settings.todo").contentData)
      } catch {
          crash(error.localizedDescription)
      }
@@ -69,13 +69,46 @@ func help(_ args: [String]) -> Void {
 
 func store(_ args: [String]) -> Void {
     if args.isEmpty { crash(.fewArgs) }
-    // TODO: implement here
-    crash(.todo)
+
+    let files = files(args)
+    var issues = issues(files)
+    user(&issues)
+
+    if issues.isEmpty {
+        print("Nothing to do here...")
+        exit(0)
+    }
+
+    do {
+        let data = try jsonEncoder.encode(issues)
+        try data.write(to: URL(fileURLWithPath: ".issues.todo"))
+    } catch {
+        crash(error.localizedDescription)
+    }
+
+    if !issues.isEmpty {
+        print("Issue", terminator: "")
+        print(issues.count > 1 ? "s " : " ", terminator: "")
+        print("stored!")
+    }
 }
 
 func commit(_ args: [String]) -> Void {
     // TODO: implement here
-    crash(.todo)
+    
+    if !FileManager().fileExists(atPath: ".issues.todo") { crash(.commitFile) }
+
+    do {
+        let data = File(".issues.todo").contentData
+        let issues: [Issue] = try jsonDecoder.decode([Issue].self, from: data)
+
+        if issues.isEmpty {
+            print("Nothing to do here...")
+            exit(0)
+        }
+
+        for issue in issues { print(issue) }
+    } catch { crash(error.localizedDescription) }
 }
 
 func get(_ args: [String]) async -> Void {
