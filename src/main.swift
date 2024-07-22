@@ -16,13 +16,16 @@ if FileManager().fileExists(atPath: "settings.todo") {
      }
 }
 
-// available commands list
+// available commands list (here async isn't required)
 let commands: [String: ([String]) -> Void] = [
     "-h": help,
     "help": help,
 
     "-s": store,
     "store": store,
+
+    "-l": list,
+    "list": list,
 ]
 
 // commands functions
@@ -151,6 +154,22 @@ func get(_ args: [String]) async -> Void {
     for issue in issues {
         print(issue)
     }
+}
+
+func list(_ args: [String]) -> Void {
+    if !FileManager().fileExists(atPath: ".issues.todo") { crash(.commitFile) }
+
+    do {
+        let data = File(".issues.todo").contentData
+        let issues: [Issue] = try jsonDecoder.decode([Issue].self, from: data)
+
+        if issues.isEmpty {
+            print("Nothing to do here...")
+            exit(0)
+        }
+
+        for issue in issues { print(issue) }
+    } catch { crash(error.localizedDescription) }
 }
 
 // application functions
