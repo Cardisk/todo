@@ -88,3 +88,7 @@ and applies the changes to the interested files.
 
 To show pending issues inside this file, you can use
 `[ -l | list ]` command.
+
+## License
+
+See the license here: [LICENSE](https://github.com/Cardisk/todo/LICENSE).
