@@ -2,7 +2,27 @@
 
 A command line utility to process TODOs & FIXMEs inside files.
 
+## Description
+
+Todo is a command line utility to process TODOs and FIXMEs inside the file[s] provided as argument[s].
+If no option is provided, the program will be executed in its entirety.
+
+But what exactly does this program do?
+
+It will scan the file[s] searching TODOs and FIXMEs, then it asks the user to add or discard them interactively. 
+If you provide something different from the choices, by default the program will discard that issue.
+
+Based on which command is being executed, the program handles issues differently (see OPTIONS below).
+At the end of the process, only accepted issues will be posted on GitHub and TODOs and FIXMEs are replaced with ISSUE(#number)
+where 'number' is the corresponding id on the remote.
+
 ## Usage
+
+Default behaviour:
+
+```shell
+> todo <file> ... 
+```
 
 To show usage:
 
