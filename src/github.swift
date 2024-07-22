@@ -70,23 +70,40 @@ struct Github {
         self.request.addValue("token \(self.token)", forHTTPHeaderField: "Authorization")
     }
 
-    mutating func getIssues() async -> [GithubIssue] {
+    mutating func getIssues(_ state: String) async -> [GithubIssue] {
         var githubIssues: [GithubIssue] = []
 
         self.request.httpMethod = "GET"
         self.request.httpBody = nil
 
+        let items: [URLQueryItem] = [ URLQueryItem(name: "state", value: state) ]
+        self.request.url!.append(queryItems: items)
+
         do {
             let (data, response) = try await query(self.request)
 
             guard let code = response as? HTTPURLResponse, 200 ~= code.statusCode else {
-                crash("Github.getIssues: \(self.request.url!.path())", .invalidResponse)
+                let res = response as? HTTPURLResponse
+                let code = if let r = res { r.statusCode } else { -1 }
+                var str = "Github.getIssues (\(code)): "
+                switch code {
+                case 301:
+                    str += "Moved Permanently"
+                case 404:
+                    str += "Resource not found"
+                case 422:
+                    str += "Validation failed, or the endpoint has been spammed"
+                default:
+                    crash("Github.postIssues: response \(response) at \(self.request.url!.path())", .invalidResponse)
+                }
+
+                crash(str, .invalidResponse)
             }
 
             githubIssues = try JSONDecoder().decode([GithubIssue].self, from: data)
         } catch {
             crash(error.localizedDescription)
-        } 
+        }
 
         return githubIssues
     }

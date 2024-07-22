@@ -23,9 +23,6 @@ let commands: [String: ([String]) -> Void] = [
 
     "-s": store,
     "store": store,
-
-    "-c": commit,
-    "commit": commit,
 ]
 
 // commands functions
@@ -55,15 +52,16 @@ func help(_ args: [String]) -> Void {
             [ -h | help   ]
                 Show this message
 
-            [ -s | store  ]
+            [ -s | store  ] <file> ...
                 Skip the GitHub posting and store the result into '.todoIssues'
 
             [ -c | commit ]
                 Read the issues from '.todoIssues' and post them onto GitHub
                 Also changes the interested file[s]
 
-            [ -g | get    ]
-                Display all the issues found on GitHub
+            [ -g | get    ] [ open | closed | all ]
+                Display the issues found on GitHub.
+                By default, only the opened ones will be retrieved.
     """)
 }
 
@@ -93,27 +91,53 @@ func store(_ args: [String]) -> Void {
     }
 }
 
-func commit(_ args: [String]) -> Void {
-    // TODO: implement here
-    
-    if !FileManager().fileExists(atPath: ".issues.todo") { crash(.commitFile) }
+func commit(_ args: [String]) async -> Void {
+    let fileManager = FileManager()
+    if !fileManager.fileExists(atPath: ".issues.todo") { crash(.commitFile) }
 
     do {
         let data = File(".issues.todo").contentData
-        let issues: [Issue] = try jsonDecoder.decode([Issue].self, from: data)
+        var issues: [Issue] = try jsonDecoder.decode([Issue].self, from: data)
 
         if issues.isEmpty {
             print("Nothing to do here...")
             exit(0)
         }
 
-        for issue in issues { print(issue) }
+        let githubIssues = await post(issues)
+
+        if issues.count != githubIssues.count { crash(.invalidIssuesCount) }
+        var i = 0
+        while i < issues.count {
+            issues[i].number = githubIssues[i].number
+            i += 1
+        }
+
+        var fileNames: [String] = []
+        for issue in issues { fileNames.append(issue.filePath) }
+        
+        let files = files(fileNames)
+        modify(files, issues)
+
+        if !issues.isEmpty {
+            print("Issue", terminator: "")
+            print(issues.count > 1 ? "s " : " ", terminator: "")
+            print("committed!")
+        }
+
+        try fileManager.removeItem(atPath: ".issues.todo")
     } catch { crash(error.localizedDescription) }
 }
 
 func get(_ args: [String]) async -> Void {
+    let state = if !args.isEmpty {
+        args.first!
+    } else {
+        "open"
+    }
+
     var handle = await Github(settings)
-    let issues = await handle.getIssues()
+    let issues = await handle.getIssues(state)
 
     if issues.isEmpty {
         print("Nothing aquired from the remote...")
@@ -204,7 +228,14 @@ func main() async -> Never {
         // safe unwrap, already validated
         commands[cmd]!(args)
 
+    case "-c", "commit":
+        // removing the command
+        args.removeFirst()
+        await commit(args)
+
     case "-g", "get":
+        // removing the command
+        args.removeFirst()
         await get(args)
 
     default:
