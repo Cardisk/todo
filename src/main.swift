@@ -1,5 +1,8 @@
 import Foundation
 
+// execution path
+let pwd = FileManager.default.currentDirectoryPath
+
 // JSON serializers
 let jsonEncoder = JSONEncoder()
 let jsonDecoder = JSONDecoder()
@@ -7,10 +10,10 @@ let jsonDecoder = JSONDecoder()
 // application settings
 var settings = Settings()
 
-if FileManager().fileExists(atPath: "settings.todo") {
+if FileManager().fileExists(atPath: "\(pwd)/settings.todo") {
      do {
          settings = try jsonDecoder.decode(Settings.self, 
-                                 from: File("settings.todo").contentData)
+                                 from: File("\(pwd)/settings.todo").contentData)
      } catch {
          crash(error.localizedDescription)
      }
@@ -86,7 +89,7 @@ func store(_ args: [String]) -> Void {
 
     do {
         let data = try jsonEncoder.encode(issues)
-        try data.write(to: URL(fileURLWithPath: ".issues.todo"))
+        try data.write(to: URL(fileURLWithPath: "\(pwd)/.issues.todo"))
     } catch {
         crash(error.localizedDescription)
     }
@@ -100,10 +103,10 @@ func store(_ args: [String]) -> Void {
 
 func commit(_ args: [String]) async -> Void {
     let fileManager = FileManager()
-    if !fileManager.fileExists(atPath: ".issues.todo") { crash(.commitFile) }
+    if !fileManager.fileExists(atPath: "\(pwd)/.issues.todo") { crash(.commitFile) }
 
     do {
-        let data = File(".issues.todo").contentData
+        let data = File("\(pwd)/.issues.todo").contentData
         var issues: [Issue] = try jsonDecoder.decode([Issue].self, from: data)
 
         if issues.isEmpty {
@@ -132,7 +135,7 @@ func commit(_ args: [String]) async -> Void {
             print("committed!")
         }
 
-        try fileManager.removeItem(atPath: ".issues.todo")
+        try fileManager.removeItem(atPath: "\(pwd)/.issues.todo")
     } catch { crash(error.localizedDescription) }
 }
 
@@ -161,10 +164,10 @@ func get(_ args: [String]) async -> Void {
 }
 
 func list(_ args: [String]) -> Void {
-    if !FileManager().fileExists(atPath: ".issues.todo") { crash(.commitFile) }
+    if !FileManager().fileExists(atPath: "\(pwd)/.issues.todo") { crash(.commitFile) }
 
     do {
-        let data = File(".issues.todo").contentData
+        let data = File("\(pwd)/.issues.todo").contentData
         let issues: [Issue] = try jsonDecoder.decode([Issue].self, from: data)
 
         if issues.isEmpty {
