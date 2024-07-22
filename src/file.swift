@@ -99,6 +99,19 @@ class File {
         return issues
     }
 
+    func commitIssue(_ issue: Issue) -> Void {
+        var line = "ISSUE(#\(issue.number)): \(issue.title) \(self.commentPostfix)"
+        line = line.trimmingCharacters(in: .whitespacesAndNewlines)
+        let range = self.content.range(of: issue.rawTitle)!
+        self.content.replaceSubrange(range, with: line)
+
+        do {
+            try self.contentData.write(to: URL(fileURLWithPath: self.path))
+        } catch { 
+            crash(error.localizedDescription) 
+        }
+    }
+
     func commitIssues(_ issues: [Issue]) -> Void {
         for issue in issues {
             var line = "ISSUE(#\(issue.number)): \(issue.title) \(self.commentPostfix)"
