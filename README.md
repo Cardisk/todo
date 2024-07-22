@@ -48,7 +48,7 @@ To get the issues from the remote:
 > todo [ -g | get ] [ open | closed | all ]
 ```
 
-**NOTE**: the default state used is 'open'.
+> **NOTE**: The default state used is 'open'
 
 To list the issues inside '.issues.todo': 
 
@@ -76,7 +76,7 @@ Example:
 
 `postfix`: chars of the comment postfix.
 
-**NOTE**: if this file is not provided, the program uses default info like `//` for prefix and leaves everything else empty.
+> **NOTE**: If this file is not provided, the program uses default info like `//` for prefix and leaves everything else empty.
 
 ## .issues.todo
 
