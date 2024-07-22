@@ -91,4 +91,4 @@ To show pending issues inside this file, you can use
 
 ## License
 
-See the license here: [LICENSE](https://github.com/Cardisk/todo/LICENSE).
+See the license here: [LICENSE](https://github.com/Cardisk/todo/blob/main/LICENSE).
