@@ -136,6 +136,11 @@ func get(_ args: [String]) async -> Void {
         "open"
     }
 
+    let states = [ "open", "closed", "all" ]
+    if !states.contains(state) {
+        crash("Invalid Issue state provided.")
+    }
+
     var handle = await Github(settings)
     let issues = await handle.getIssues(state)
 
