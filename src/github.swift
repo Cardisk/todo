@@ -118,9 +118,29 @@ struct Github {
             for issue in issues {
                 self.request.httpBody = issue.data
                 let (data, response) = try await query(self.request)
-                
+
                 guard let code = response as? HTTPURLResponse, 201 ~= code.statusCode else {
-                    crash("Github.postIssues: response \(response) at \(self.request.url!.path())", .invalidResponse)
+                    let res = response as? HTTPURLResponse
+                    let code = if let r = res { r.statusCode } else { -1 }
+                    var str = "Github.postIssues (\(code)): "
+                    switch code {
+                    case 400:
+                        str += "Bad Request"
+                    case 403:
+                        str += "Forbidden"
+                    case 404:
+                        str += "Resource not found"
+                    case 410:
+                        str += "Gone"
+                    case 422:
+                        str += "Validation failed, or the endpoint has been spammed"
+                    case 503:
+                        str += "Service unavailable"
+                    default:
+                        crash("Github.postIssues: response \(response) at \(self.request.url!.path())", .invalidResponse)
+                    }
+
+                    crash(str, .invalidResponse)
                 }
 
                 let githubIssue = try JSONDecoder().decode(GithubIssue.self, from: data)
