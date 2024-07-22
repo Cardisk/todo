@@ -36,7 +36,8 @@ func help(_ args: [String]) -> Void {
 
     USAGE:
             todo [ -h | help   ] [ -s | store  ] 
-                 [ -c | commit ] [ -g | get    ] <file> ...
+                 [ -c | commit ] [ -g | get    ] 
+                 [ -l | list   ] <file> ...
 
     DESCRIPTION:
             Todo is a command line utility to process TODOs and FIXMEs inside
@@ -56,15 +57,18 @@ func help(_ args: [String]) -> Void {
                 Show this message
 
             [ -s | store  ] <file> ...
-                Skip the GitHub posting and store the result into '.todoIssues'
+                Skip the GitHub posting and store the result into '.issues.todo'
 
             [ -c | commit ]
-                Read the issues from '.todoIssues' and post them onto GitHub
+                Read the issues from '.issues.todo' and post them onto GitHub
                 Also changes the interested file[s]
 
             [ -g | get    ] [ open | closed | all ]
                 Display the issues found on GitHub.
                 By default, only the opened ones will be retrieved.
+
+            [ -l | list   ] 
+                Display the issues stored into '.issues.todo'.
     """)
 }
 
