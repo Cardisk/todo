@@ -1,6 +1,5 @@
 import Foundation
 
-// TODO: Do I really need title and body?
 struct GithubIssue: Codable {
     let number: Int
     let title: String?
