@@ -13,11 +13,28 @@ ifeq ($(OS),Windows_NT)
 endif
 
 ifeq ($(uname),Darwin)
-	@echo "Installation for MacOS is not implemented yet."
+	@echo "Build finished, installing into: /usr/local/bin"
+	@cp build/todo /usr/local/bin/todo
+	@echo "Installation finished."
 endif
 
 ifeq ($(uname),Linux)
 	@echo "Installation for Linux is not implemented yet."
+endif
+
+uninstall:
+ifeq ($(OS),Windows_NT)
+	@echo "Uninstall command for Windows is not implemented yet."
+endif
+
+ifeq ($(uname),Darwin)
+	@echo "Removing /usr/local/bin/todo"
+	@rm /usr/local/bin/todo
+	@echo "Removal finished."
+endif
+
+ifeq ($(uname),Linux)
+	@echo "Uninstall command for Linux is not implemented yet."
 endif
 
 clean:
