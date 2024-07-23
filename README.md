@@ -111,6 +111,14 @@ and applies the changes to the interested files.
 To show pending issues inside this file, you can use
 `[ -l | list ]` command.
 
+## Limitations
+
+Tested:
+- MacOs Sonoma 14.5
+- Debian (docker image found [here](https://www.swift.org/install/linux/debian/12/#versions))
+
+At the moment it only compiles for MacOs due to different implementation of `Foundation`.
+
 ## License
 
 See the license here: [LICENSE](https://github.com/Cardisk/todo/blob/main/LICENSE).
