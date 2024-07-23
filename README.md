@@ -16,6 +16,28 @@ Based on which command is being executed, the program handles issues differently
 At the end of the process, only accepted issues will be posted on GitHub and TODOs and FIXMEs are replaced with ISSUE(#number)
 where 'number' is the corresponding id on the remote.
 
+## Building
+
+Building from source:
+
+```shell
+> make 
+```
+
+Installation:
+
+```shell
+> sudo make install 
+```
+
+Removal:
+
+```shell
+> sudo make uninstall
+```
+
+> **NOTE**: At the moment installation is not implemented for Windows.
+
 ## Usage
 
 Default behaviour:
