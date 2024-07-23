@@ -248,7 +248,15 @@ func main() async -> Never {
     // removing program name
     args.removeFirst()
     // nothing provided
-    if args.isEmpty { crash(.fewArgs) }
+    if args.isEmpty { 
+        print("""
+        usage: todo [ -h | help   ] [ -s | store  ] 
+                    [ -c | commit ] [ -g | get    ] 
+                    [ -l | list   ] <file> ...
+
+        """)
+        crash(.fewArgs) 
+    }
     
 
     // safe unwrap, already validated
